@@ -1,6 +1,6 @@
 import express from "express";
-/* import ProductManager from "./productManager.js";
-import CartManager from "./cartManager.js"; */
+import ProductManager from "./productManager.js";
+import CartManager from "./cartManager.js";
 import productsRouter from "./routes/productsRouter.js";
 import cartsRouter from "./routes/cartsRouter.js";
 import handlebars from "express-handlebars";
@@ -9,6 +9,21 @@ import fs from "fs";
 import __dirname from "./dirname.js";
 import viewsRoutes from "./routes/viewsRoutes.js"
 import { Server } from "socket.io";
+import mongoose from "mongoose";
+import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
+
+
+
+// MongoDB via Mongoose
+const url = 'mongodb://localhost:27017/entrega-final'
+
+
+async function main (){
+  await mongoose.connect(url).then(() => {
+  console.log("DB Connected")
+}) .catch ((error) => {
+  console.log ("Error al conectarse a la DB", error)
+})
 
 
 let products = JSON.parse(fs.readFileSync("./data/products.json", "utf-8"));
@@ -26,7 +41,8 @@ app.engine("hbs", handlebars.engine(
   {
     extname: "hbs",
     defaultLayout: "main",
-    layoutsDir: path.join(__dirname, "views/layouts")
+    layoutsDir: path.join(__dirname, "views/layouts"),
+    handlebars: allowInsecurePrototypeAccess(handlebars)
   })
 ),
 
@@ -71,7 +87,7 @@ socket.on("deleteProduct", (id) => {
 
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
-
+app.use("/", viewsRoutes)
 
 
 
@@ -134,4 +150,5 @@ app.post("/api/carts/:cid/product/:pid", (req, res) => {
   CartManager.addProductToCart(cid, pid);
   res.json({ message: "(201) Producto agregado al carrito correctamente" });
 }); */
-
+}
+main()

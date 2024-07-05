@@ -1,9 +1,16 @@
 import { Router } from 'express';
 import ProductManager from '../productManager.js';
+import { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../DB.ProductManager.js';
 
 const productsRouter = Router();
 
-productsRouter.get('/', (req, res) => {
+productsRouter.get("/", getAllProducts);
+productsRouter.get("/:id", getProductById);
+productsRouter.post("/", createProduct);
+productsRouter.put("/:id", updateProduct);
+productsRouter.delete("/:id", deleteProduct);
+
+/* productsRouter.get('/', (req, res) => {
   res.json(ProductManager.getProducts());
 });
 
@@ -34,6 +41,6 @@ productsRouter.delete('/:pid', (req, res) => {
   const { pid } = req.params;
   ProductManager.deleteProduct(pid);
   res.json({ message: "Producto eliminado correctamente" });
-});
+}); */
 
 export default productsRouter;
